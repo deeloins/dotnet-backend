@@ -41,9 +41,45 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 builder.Services.AddControllers();
 
-// ✅ Add Swagger services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // change to your frontend URL
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer abc123\"",
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
 if (string.IsNullOrEmpty(jwtKey))
@@ -100,6 +136,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

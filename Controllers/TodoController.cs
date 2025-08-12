@@ -14,26 +14,31 @@ using TodoItemModel = AuthTodoApp.Data.TodoItem;
 public class TodoController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILogger<TodoController> _logger;
 
-    public TodoController(ApplicationDbContext context)
+    public TodoController(ApplicationDbContext context, ILogger<TodoController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
-    // GET: api/todo
     [HttpGet]
     public async Task<IActionResult> GetTodos()
     {
+        _logger.LogInformation("Fetching todos for user {UserId}", User.Identity?.Name);
+
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         var todos = await _context.TodoItems
             .Where(t => t.UserId == userId)
             .ToListAsync();
 
+        _logger.LogInformation("Fetched {Count} todos", todos.Count);
+
         return Ok(todos);
     }
 
-    // POST: api/todo
+
     [HttpPost]
     public async Task<IActionResult> CreateTodo([FromBody] TodoCreateDto newTask)
     {
@@ -56,7 +61,7 @@ public class TodoController : ControllerBase
         return CreatedAtAction(nameof(GetTodos), new { id = todo.Id }, todo);
     }
 
-    // PUT: api/todo/{id}
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTodo(int id, [FromBody] TodoUpdateDto updatedTodo)
     {
@@ -79,19 +84,30 @@ public class TodoController : ControllerBase
         return Ok(todo);
     }
 
-    // DELETE: api/todo/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTodo(int id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var todo = await _context.TodoItems.FindAsync(id);
 
-        if (todo == null || todo.UserId != userId)
-            return NotFound();
+        if (todo == null)
+            return NotFound(new ErrorResponse { Message = "Todo not found" });
+
+        if (!ModelState.IsValid)
+            return BadRequest(new ErrorResponse
+            {
+                Message = "Validation failed",
+                Details = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+            });
 
         _context.TodoItems.Remove(todo);
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(new
+        {
+            message = "Todo deleted successfully",
+            deletedTodo = todo
+        });
     }
+
 }

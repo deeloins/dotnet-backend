@@ -132,6 +132,7 @@ C:\Users\USER\AuthTodoApp\obj\Debug\net9.0\AuthTodoApp.AssemblyInfo.cs
 C:\Users\USER\AuthTodoApp\obj\Debug\net9.0\AuthTodoApp.csproj.CoreCompileInputs.cache
 C:\Users\USER\AuthTodoApp\obj\Debug\net9.0\AuthTodoApp.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\USER\AuthTodoApp\obj\Debug\net9.0\AuthTodoApp.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\USER\AuthTodoApp\obj\Debug\net9.0\AuthTodoApp.sourcelink.json
 C:\Users\USER\AuthTodoApp\obj\Debug\net9.0\rjimswa.dswa.cache.json
 C:\Users\USER\AuthTodoApp\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
 C:\Users\USER\AuthTodoApp\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
