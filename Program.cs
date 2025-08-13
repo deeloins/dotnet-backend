@@ -12,9 +12,10 @@ builder.Services.AddControllers();
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+    ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? throw new InvalidOperationException("Database connection string is not configured");
 
-if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgres://"))
+if (connectionString.StartsWith("postgres://"))
 {
     // Convert Railway postgres URL to connection string
     var uri = new Uri(connectionString);
@@ -28,7 +29,7 @@ if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("post
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString, o => o.EnableRetryOnFailure()));
 
 // Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -42,20 +43,31 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// JWT
+// JWT Configuration
 var jwtKey = builder.Configuration["JWT:Key"] ?? Environment.GetEnvironmentVariable("JWT_KEY");
 var jwtIssuer = builder.Configuration["JWT:Issuer"] ?? Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "YesList";
+var jwtAudience = builder.Configuration["JWT:Audience"] ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? jwtIssuer;
 
 if (string.IsNullOrEmpty(jwtKey))
 {
-    throw new InvalidOperationException("JWT Key is not configured. Set JWT_KEY environment variable.");
+    // Generate a temporary key in development
+    if (builder.Environment.IsDevelopment())
+    {
+        jwtKey = "dev-key-" + Guid.NewGuid().ToString("N");
+        Console.WriteLine("WARNING: Using temporary JWT key for development!");
+    }
+    else
+    {
+        throw new InvalidOperationException("JWT Key is not configured. Set JWT_KEY environment variable.");
+    }
 }
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
+})
+.AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -64,8 +76,19 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtIssuer,
-        ValidAudience = jwtIssuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+        ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError(context.Exception, "Authentication failed");
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -88,14 +111,25 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
 
-// Add health check endpoint for Railway
-app.MapGet("/health", () => "OK");
+// Health check with database verification
+app.MapGet("/health", async (ApplicationDbContext dbContext) =>
+{
+    try
+    {
+        await dbContext.Database.CanConnectAsync();
+        return Results.Ok("Healthy");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Unhealthy: {ex.Message}");
+    }
+});
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
@@ -103,21 +137,30 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Auto-migrate database
+// Database migration with better error handling
 try
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate();
-    }
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    logger.LogInformation("Applying database migrations...");
+    await context.Database.MigrateAsync();
+    logger.LogInformation("Migrations applied successfully");
 }
 catch (Exception ex)
 {
     var logger = app.Services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "An error occurred while migrating the database.");
+    logger.LogError(ex, "Failed to apply database migrations");
+
+    if (!app.Environment.IsDevelopment())
+    {
+        // In production, exit if migrations fail
+        Environment.Exit(1);
+    }
 }
 
-// Use port from environment or default to 8080
+// Configure port
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Logger.LogInformation("Starting web server on port {Port}", port);
 app.Run($"http://0.0.0.0:{port}");
