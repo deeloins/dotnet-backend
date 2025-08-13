@@ -97,9 +97,6 @@
           }
         }
       },
-      "Microsoft.AspNetCore.OpenApi/7.0.0": {
-        "type": "package"
-      },
       "Microsoft.CSharp/4.5.0": {
         "type": "package",
         "compile": {
@@ -2069,21 +2066,6 @@
         "lib/net6.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.xml",
         "microsoft.aspnetcore.identity.entityframeworkcore.6.0.0.nupkg.sha512",
         "microsoft.aspnetcore.identity.entityframeworkcore.nuspec"
-      ]
-    },
-    "Microsoft.AspNetCore.OpenApi/7.0.0": {
-      "sha512": "P1mkNhZ3IwU3phNLIUkgqVXb1exnooTalIYwpSON3oKKkcRtACDgS4WpO+xnwFw4KzV0bmgkUqB3acXxIefvvg==",
-      "type": "package",
-      "path": "microsoft.aspnetcore.openapi/7.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "THIRD-PARTY-NOTICES.TXT",
-        "lib/net7.0/Microsoft.AspNetCore.OpenApi.dll",
-        "lib/net7.0/Microsoft.AspNetCore.OpenApi.xml",
-        "microsoft.aspnetcore.openapi.7.0.0.nupkg.sha512",
-        "microsoft.aspnetcore.openapi.nuspec"
       ]
     },
     "Microsoft.CSharp/4.5.0": {
@@ -6159,7 +6141,6 @@
       "DotNetEnv >= 3.1.1",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 6.0.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 6.0.0",
-      "Microsoft.AspNetCore.OpenApi >= 6.0.0",
       "Microsoft.EntityFrameworkCore.Tools >= 6.0.0",
       "Microsoft.IdentityModel.Tokens >= 6.0.0",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 6.0.10",
@@ -6219,10 +6200,6 @@
             "version": "[6.0.0, )"
           },
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
-            "target": "Package",
-            "version": "[6.0.0, )"
-          },
-          "Microsoft.AspNetCore.OpenApi": {
             "target": "Package",
             "version": "[6.0.0, )"
           },
@@ -6295,16 +6272,6 @@
       "code": "NU1603",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "AuthTodoApp depends on Microsoft.AspNetCore.OpenApi (>= 6.0.0) but Microsoft.AspNetCore.OpenApi 6.0.0 was not found. Microsoft.AspNetCore.OpenApi 7.0.0 was resolved instead.",
-      "libraryId": "Microsoft.AspNetCore.OpenApi",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    },
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
       "message": "AuthTodoApp depends on Microsoft.IdentityModel.Tokens (>= 6.0.0) but Microsoft.IdentityModel.Tokens 6.0.0 was not found. Microsoft.IdentityModel.Tokens 6.5.0 was resolved instead.",
       "libraryId": "Microsoft.IdentityModel.Tokens",
       "targetGraphs": [
@@ -6355,15 +6322,6 @@
       "level": "Error",
       "message": "Warning As Error: Detected package downgrade: Microsoft.IdentityModel.Tokens from 6.10.0 to 6.5.0. Reference the package directly from the project to select a different version. \r\n AuthTodoApp -> Microsoft.AspNetCore.Authentication.JwtBearer 6.0.0 -> Microsoft.IdentityModel.Protocols.OpenIdConnect 6.10.0 -> Microsoft.IdentityModel.Protocols 6.10.0 -> Microsoft.IdentityModel.Tokens (>= 6.10.0) \r\n AuthTodoApp -> Microsoft.IdentityModel.Tokens (>= 6.0.0)",
       "libraryId": "Microsoft.IdentityModel.Tokens",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    },
-    {
-      "code": "NU1202",
-      "level": "Error",
-      "message": "Package Microsoft.AspNetCore.OpenApi 7.0.0 is not compatible with net6.0 (.NETCoreApp,Version=v6.0). Package Microsoft.AspNetCore.OpenApi 7.0.0 supports: net7.0 (.NETCoreApp,Version=v7.0)",
-      "libraryId": "Microsoft.AspNetCore.OpenApi",
       "targetGraphs": [
         "net6.0"
       ]
