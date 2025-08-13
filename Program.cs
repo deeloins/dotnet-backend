@@ -64,6 +64,10 @@ var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
           ?? builder.Configuration["JWT:Key"]
           ?? throw new InvalidOperationException("JWT Key is not configured");
 
+Console.WriteLine("=== ENV DUMP ===");
+Console.WriteLine($"JWT_KEY: {Environment.GetEnvironmentVariable("JWT_KEY") ?? "NULL"}");
+Console.WriteLine($"All vars: {string.Join(", ", Environment.GetEnvironmentVariables().Keys)}");
+
 var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
              ?? builder.Configuration["JWT:Issuer"]
              ?? "DefaultIssuer";

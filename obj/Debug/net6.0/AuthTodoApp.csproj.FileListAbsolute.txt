@@ -57,3 +57,4 @@ C:\Users\USER\AuthTodoApp\obj\Debug\net6.0\refint\AuthTodoApp.dll
 C:\Users\USER\AuthTodoApp\obj\Debug\net6.0\AuthTodoApp.pdb
 C:\Users\USER\AuthTodoApp\obj\Debug\net6.0\AuthTodoApp.genruntimeconfig.cache
 C:\Users\USER\AuthTodoApp\obj\Debug\net6.0\ref\AuthTodoApp.dll
+C:\Users\USER\AuthTodoApp\bin\Debug\net6.0\nuget.config
