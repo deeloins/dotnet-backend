@@ -7,4 +7,8 @@ startCommand = "dotnet AuthTodoApp.dll"
 
 [variables]
 ASPNETCORE_ENVIRONMENT = "Production"
-DOTNET_ROOT = "/app"
+PORT = "8080"
+DATABASE_URL = "postgresql://postgres:tipajupORvvQGJnaTmYgHNJFeYWCYxXU@gondola.proxy.rlwy.net:25695/railway"
+JWT_KEY = "ThisIsASecretKeyForJwtTokenDontShare"       
+JWT_ISSUER = "YesList"
+JWT_AUDIENCE = "YesUsers"
