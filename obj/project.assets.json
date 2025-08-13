@@ -6149,6 +6149,7 @@
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 6.0.22",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 6.0.22",
       "Microsoft.EntityFrameworkCore >= 6.0.22",
+      "Microsoft.EntityFrameworkCore.Analyzers >= 6.0.22",
       "Microsoft.EntityFrameworkCore.Design >= 6.0.22",
       "Microsoft.EntityFrameworkCore.Tools >= 6.0.22",
       "Microsoft.IdentityModel.Tokens >= 6.10.0",
@@ -6213,6 +6214,10 @@
             "version": "[6.0.22, )"
           },
           "Microsoft.EntityFrameworkCore": {
+            "target": "Package",
+            "version": "[6.0.22, )"
+          },
+          "Microsoft.EntityFrameworkCore.Analyzers": {
             "target": "Package",
             "version": "[6.0.22, )"
           },
