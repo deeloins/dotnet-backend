@@ -1,26 +1,9 @@
 [build]
-builder = "nixpacks"
-ignoreBuildCache = true
+command = """
+dotnet nuget locals all --clear
+dotnet restore --no-cache
+dotnet publish -c Release -o out
+"""
 
-[deploy]
-healthcheckPath = "/health"
-healthcheckTimeout = 300
-restartPolicyType = "ON_FAILURE"
-
-[[services]]
-name = "authtodoapp"
-startCommand = "dotnet AuthTodoApp.dll"
-
-[phases.build]
-cmds = [
-    "dotnet restore",
-    "dotnet publish -c Release -o out"
-]
-
-[phases.start]
-cmds = [
-    "dotnet out/AuthTodoApp.dll"
-]
-
-[services.variables]
-ASPNETCORE_ENVIRONMENT = "Production"
+[start]
+command = "dotnet out/AuthTodoApp.dll"

@@ -6159,7 +6159,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\USER\\.nuget\\packages\\": {}
+    "C:\\Users\\USER\\AuthTodoApp\\.nuget": {}
   },
   "project": {
     "version": "1.0.0",
@@ -6167,10 +6167,11 @@
       "projectUniqueName": "C:\\Users\\USER\\AuthTodoApp\\AuthTodoApp.csproj",
       "projectName": "AuthTodoApp",
       "projectPath": "C:\\Users\\USER\\AuthTodoApp\\AuthTodoApp.csproj",
-      "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\USER\\AuthTodoApp\\.nuget",
       "outputPath": "C:\\Users\\USER\\AuthTodoApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
+        "C:\\Users\\USER\\AuthTodoApp\\NuGet.Config",
         "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
