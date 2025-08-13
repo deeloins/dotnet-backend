@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AuthTodoApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7861efad0e29cbf74919e44aa88f85c88619777")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+26974eddb6eb3b58cc035835780426a91d694c21")]
 [assembly: System.Reflection.AssemblyProductAttribute("AuthTodoApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AuthTodoApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
