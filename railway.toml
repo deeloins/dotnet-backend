@@ -1,14 +1,12 @@
 [build]
-command = "dotnet restore && dotnet publish -c Release -o ./publish"
+command = "rm -rf bin obj && dotnet restore && dotnet publish -c Release -o ./publish"
 output = "./publish"
 
 [deploy]
-startCommand = "dotnet AuthTodoApp.dll"
+startCommand = "echo 'Checking JWT_KEY: $JWT_KEY' && dotnet AuthTodoApp.dll"
 
 [variables]
-ASPNETCORE_ENVIRONMENT = "Production"
-PORT = "8080"
-DATABASE_URL = "postgresql://postgres:tipajupORvvQGJnaTmYgHNJFeYWCYxXU@gondola.proxy.rlwy.net:25695/railway"
-JWT_KEY = "ThisIsASecretKeyForJwtTokenDontShare"       
+JWT_KEY = { must_be_set = true }
 JWT_ISSUER = "YesList"
 JWT_AUDIENCE = "YesUsers"
+PORT = "8080"
