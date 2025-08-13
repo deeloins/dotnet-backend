@@ -28,8 +28,16 @@ if (connectionString.StartsWith("postgres://"))
     connectionString = $"Host={host};Port={dbPort};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
 
+// In Program.cs, replace the database config with:
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString, o => o.EnableRetryOnFailure()));
+{
+    options.UseNpgsql(connectionString, o => o.EnableRetryOnFailure(
+    maxRetryCount: 5,
+    maxRetryDelay: TimeSpan.FromSeconds(30),
+    errorCodesToAdd: null
+    ));
+    options.LogTo(Console.WriteLine, LogLevel.Information);
+});
 
 // Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
