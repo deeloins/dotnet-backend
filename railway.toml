@@ -1,9 +1,10 @@
 [build]
-command = """
-dotnet nuget locals all --clear
-dotnet restore --no-cache
-dotnet publish -c Release -o out
-"""
+command = "dotnet restore && dotnet publish -c Release -o ./publish"
+output = "./publish"
 
-[start]
-command = "dotnet out/AuthTodoApp.dll"
+[deploy]
+startCommand = "dotnet AuthTodoApp.dll"
+
+[variables]
+ASPNETCORE_ENVIRONMENT = "Production"
+DOTNET_ROOT = "/app"
