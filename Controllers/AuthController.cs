@@ -25,11 +25,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto registerDto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        Console.WriteLine($"Registration attempt for {registerDto?.Email}");
 
+        if (!ModelState.IsValid)
+        {
+            Console.WriteLine($"Model errors: {string.Join(", ", ModelState.Values.SelectMany(v => v.Errors))}");
+            return BadRequest(ModelState);
+        }
         // Fix: Use registerDto.Email instead of model.Email
         if (!new EmailAddressAttribute().IsValid(registerDto.Email))
         {

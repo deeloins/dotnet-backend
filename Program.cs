@@ -97,22 +97,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins(
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
                 "http://localhost:3000",
-                "https://your-app-name.vercel.app",
-                "https://*.vercel.app"
+                "https://your-frontend.vercel.app"
             )
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-        });
+            .AllowAnyMethod() // ← Critical for POST
+            .AllowCredentials(); // ← If using cookies
+    });
 });
+
+// Later in the pipeline:
 
 var app = builder.Build();
 
@@ -137,10 +136,15 @@ app.MapGet("/health", async (ApplicationDbContext dbContext) =>
 });
 
 app.UseHttpsRedirection();
-app.UseCors("AllowFrontend");
+app.UseCors("AllowFrontend");// ← Place this AFTER UseRouting()
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
+app.MapControllers(); app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Incoming {context.Request.Method} to {context.Request.Path}");
+    await next();
+});
 
 // Database migration with better error handling
 try
