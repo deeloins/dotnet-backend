@@ -51,26 +51,22 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// JWT Configuration - Updated with better error handling
+Console.WriteLine("==== ACTUAL ENV VARS ====");
+var envVars = Environment.GetEnvironmentVariables();
+foreach (var key in envVars.Keys)
+{
+    Console.WriteLine($"{key} = {envVars[key]}");
+}
+
+
+// JWT Configuration
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
-    ?? builder.Configuration["JWT:Key"]
-    ?? throw new InvalidOperationException(
-        "JWT Key is not configured. Set JWT_KEY environment variable in Railway.");
+          ?? builder.Configuration["JWT:Key"]
+          ?? throw new InvalidOperationException("JWT Key is not configured");
 
 var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
-    ?? builder.Configuration["JWT:Issuer"]
-    ?? "YesList";
-
-var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
-    ?? builder.Configuration["JWT:Audience"]
-    ?? jwtIssuer;
-
-// Development fallback (remove in production)
-if (builder.Environment.IsDevelopment() && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JWT_KEY")))
-{
-    jwtKey = "dev-key-" + Guid.NewGuid().ToString("N");
-    Console.WriteLine("⚠️ WARNING: Using temporary JWT key for development!");
-}
+             ?? builder.Configuration["JWT:Issuer"]
+             ?? "DefaultIssuer";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -78,19 +74,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-            ClockSkew = TimeSpan.Zero
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
+
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                var logger = context.HttpContext.RequestServices
+                    .GetRequiredService<ILogger<Program>>();
                 logger.LogError(context.Exception, "Authentication failed");
                 return Task.CompletedTask;
             }
