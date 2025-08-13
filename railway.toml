@@ -8,6 +8,18 @@ restartPolicyType = "ON_FAILURE"
 
 [[services]]
 name = "authtodoapp"
+startCommand = "dotnet AuthTodoApp.dll"
+
+[phases.build]
+cmds = [
+    "dotnet restore",
+    "dotnet publish -c Release -o out"
+]
+
+[phases.start]
+cmds = [
+    "dotnet out/AuthTodoApp.dll"
+]
 
 [services.variables]
 ASPNETCORE_ENVIRONMENT = "Production"
